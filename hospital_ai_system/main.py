@@ -6,6 +6,7 @@ Developer: Aditi Devlekar
 from __future__ import annotations
 
 import secrets
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -36,22 +37,12 @@ from .triage import triage
 
 APP_NAME = "BARC Hospital, Mankhurd — Smart Triage & OPD Workflow (Demo)"
 
-app = FastAPI(title=APP_NAME)
-
 BASE_DIR = Path(__file__).resolve().parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
-app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
-
-Base.metadata.create_all(bind=engine)
 
 
 def now_utc() -> datetime:
     return datetime.now(timezone.utc)
-
-
-@app.exception_handler(Exception)
-async def all_exception_handler(_: Request, exc: Exception):
-    return JSONResponse(status_code=500, content={"detail": f"Server error: {type(exc).__name__}: {str(exc)}"})
 
 
 def seed_doctors(db: Session) -> None:
@@ -83,13 +74,29 @@ def seed_doctors(db: Session) -> None:
     db.commit()
 
 
-@app.on_event("startup")
-def _startup_seed():
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    # create tables
+    Base.metadata.create_all(bind=engine)
+
+    # seed doctors
     db = next(get_db())
     try:
         seed_doctors(db)
     finally:
         db.close()
+
+    yield
+
+
+app = FastAPI(title=APP_NAME, lifespan=lifespan)
+
+app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
+
+
+@app.exception_handler(Exception)
+async def all_exception_handler(_: Request, exc: Exception):
+    return JSONResponse(status_code=500, content={"detail": f"Server error: {type(exc).__name__}: {str(exc)}"})
 
 
 # -------------------
