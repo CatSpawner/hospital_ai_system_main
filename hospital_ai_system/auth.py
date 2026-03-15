@@ -25,16 +25,30 @@ JWT_EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_MINUTES", "240"))
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
-_BCRYPT_MAX_LEN = 72
+# bcrypt only uses the first 72 BYTES of the password
+_BCRYPT_MAX_LEN_BYTES = 72
+
+
+def _bcrypt_safe_password(password: str) -> str:
+    """
+    Ensure password is safe for bcrypt:
+    - bcrypt has a 72-byte limit (NOT 72 characters)
+    - truncate by UTF-8 bytes and decode safely
+    """
+    s = password or ""
+    b = s.encode("utf-8")
+    if len(b) <= _BCRYPT_MAX_LEN_BYTES:
+        return s
+    return b[:_BCRYPT_MAX_LEN_BYTES].decode("utf-8", errors="ignore")
 
 
 def hash_password(password: str) -> str:
-    pw = password[:_BCRYPT_MAX_LEN]
+    pw = _bcrypt_safe_password(password)
     return pwd_context.hash(pw)
 
 
 def verify_password(password: str, password_hash: str) -> bool:
-    pw = password[:_BCRYPT_MAX_LEN]
+    pw = _bcrypt_safe_password(password)
     return pwd_context.verify(pw, password_hash)
 
 
