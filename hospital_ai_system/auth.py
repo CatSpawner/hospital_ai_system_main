@@ -22,34 +22,23 @@ JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "dev-secret-change-me")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 JWT_EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_MINUTES", "240"))
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# IMPORTANT:
+# Use PBKDF2_SHA256 to avoid bcrypt's 72-byte password limit and bcrypt backend issues on Python 3.14.
+pwd_context = CryptContext(
+    schemes=["pbkdf2_sha256"],
+    deprecated="auto",
+)
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
-
-# bcrypt only uses the first 72 BYTES of the password
-_BCRYPT_MAX_LEN_BYTES = 72
-
-
-def _bcrypt_safe_password(password: str) -> str:
-    """
-    Ensure password is safe for bcrypt:
-    - bcrypt has a 72-byte limit (NOT 72 characters)
-    - truncate by UTF-8 bytes and decode safely
-    """
-    s = password or ""
-    b = s.encode("utf-8")
-    if len(b) <= _BCRYPT_MAX_LEN_BYTES:
-        return s
-    return b[:_BCRYPT_MAX_LEN_BYTES].decode("utf-8", errors="ignore")
 
 
 def hash_password(password: str) -> str:
-    pw = _bcrypt_safe_password(password)
-    return pwd_context.hash(pw)
+    # PBKDF2 does not have bcrypt's 72-byte limit
+    return pwd_context.hash(password or "")
 
 
 def verify_password(password: str, password_hash: str) -> bool:
-    pw = _bcrypt_safe_password(password)
-    return pwd_context.verify(pw, password_hash)
+    return pwd_context.verify(password or "", password_hash)
 
 
 def create_access_token(*, sub: str, role: str, expires_delta: Optional[timedelta] = None) -> str:
