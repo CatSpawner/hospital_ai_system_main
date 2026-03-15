@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Patient Portal — BARC Hospital Mankhurd</title>
+  <meta name="description" content="Patient portal to submit symptoms and view appointment status." />
+  <link rel="stylesheet" href="/static/styles.css" />
+  <script defer src="/static/app.js"></script>
+  <script defer src="/static/popup.js"></script>
+  <script defer src="/static/patient.js"></script>
+</head>
+<body>
+  <main class="container">
+    <section class="shell">
+      <div class="topRow">
+        <div class="pageTitle">
+          <div class="title">Patient Portal</div>
+          <div class="subtitle muted">Submit symptoms and check your status</div>
+        </div>
+        <div class="topActions">
+          <button class="btn btn-ghost" id="logoutBtn" type="button">Logout</button>
+        </div>
+      </div>
+
+      <div class="notice" id="mustLoginNotice" style="display:none;"></div>
+
+      <section class="grid two">
+        <div class="card">
+          <h2>Submit Symptoms</h2>
+          <p class="muted">
+            Provide accurate information. This tool gives general guidance only and does not replace medical advice.
+          </p>
+
+          <form id="submitForm" class="form">
+            <label class="field">
+              <span>Your name</span>
+              <input name="name" required minlength="2" maxlength="200" autocomplete="name" />
+            </label>
+
+            <label class="field">
+              <span>Symptoms</span>
+              <textarea name="symptoms" required minlength="3" maxlength="5000" rows="7"
+                placeholder="Example: Fever for 2 days, sore throat, headache..."></textarea>
+            </label>
+
+            <div class="row">
+              <button class="btn" type="submit">Submit</button>
+              <button class="btn btn-secondary" id="dashBtn" type="button">Refresh status</button>
+            </div>
+          </form>
+
+          <div class="note" id="submitOut"></div>
+
+          <div class="help" style="margin-top:12px;">
+            <p class="warn">
+              Emergency warning: chest pain, trouble breathing, heavy bleeding, fainting —
+              seek emergency care immediately.
+            </p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Your Status</h2>
+          <div class="tip" id="patientTip"></div>
+          <div id="dashCards" class="cards"></div>
+        </div>
+      </section>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{{ app_name }}</title>
+  <meta name="description" content="BARC Hospital Mankhurd demo portal for patients and doctors." />
+  <link rel="stylesheet" href="/static/styles.css" />
+  <script defer src="/static/app.js"></script>
+  <script defer src="/static/popup.js"></script>
+  <script defer src="/static/home.js"></script>
+</head>
+<body>
+  <main class="container">
+    <section class="shell">
+      <div class="topRow">
+        <div class="brand">
+          <div class="logo">BH</div>
+          <div>
+            <div class="title">BARC Hospital, Mankhurd</div>
+            <div class="subtitle">Smart Triage & OPD Workflow (Demo)</div>
+          </div>
+        </div>
+
+      </div>
+
+      <section class="authLayout">
+        <div class="authLeft">
+          <div class="card heroCard">
+            <div class="heroTag">Secure portal</div>
+            <h1 class="heroTitle">Welcome</h1>
+            <p class="heroText">
+              Login as Patient or Doctor. Patients can create an account and submit symptoms for OPD triage guidance.
+            </p>
+
+            <div class="heroPoints">
+              <div class="heroPoint">
+                <div class="hpDot"></div>
+                <div>
+                  <div class="hpTitle">Patient-friendly</div>
+                  <div class="hpText muted">Simple form, clear status, mobile-first UI.</div>
+                </div>
+              </div>
+              <div class="heroPoint">
+                <div class="hpDot"></div>
+                <div>
+                  <div class="hpTitle">Doctor workflow</div>
+                  <div class="hpText muted">Open patient details, update triage, reassign, complete.</div>
+                </div>
+              </div>
+              <div class="heroPoint">
+                <div class="hpDot hpDotWarn"></div>
+                <div>
+                  <div class="hpTitle">Emergency warning</div>
+                  <div class="hpText muted">For severe symptoms, seek emergency care immediately.</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="authRight">
+          <div class="card card-glow authCard">
+            <div class="authHeader">
+              <div>
+                <div class="authTitle">Login</div>
+                <div class="muted small">Select your role and continue.</div>
+              </div>
+            </div>
+
+            <div class="segmented" role="tablist" aria-label="Role selection">
+              <button type="button" class="seg-btn" id="patientToggle">Patient</button>
+              <button type="button" class="seg-btn" id="doctorToggle">Doctor</button>
+            </div>
+
+            <form id="loginForm" class="form" style="margin-top: 12px;">
+              <input type="hidden" name="role" id="roleField" value="patient" />
+
+              <label class="field">
+                <span>Username</span>
+                <input name="username" required minlength="3" maxlength="120" autocomplete="username" />
+              </label>
+
+              <label class="field">
+                <span>Password</span>
+                <input name="password" type="password" required minlength="8" maxlength="128" autocomplete="current-password" />
+              </label>
+
+              <div class="row row-space" style="margin-top: 4px;">
+                <button class="btn" type="submit" id="loginBtn">Login</button>
+                <button class="btn btn-ghost" id="openRegisterBtn" type="button">Patient Registration</button>
+              </div>
+            </form>
+
+            <div class="note" id="loginOut"></div>
+
+            <div class="kv">
+              <div class="k">Token</div><div class="v mono" id="tokenState">(none)</div>
+              <div class="k">Role</div><div class="v mono" id="roleState">(unknown)</div>
+            </div>
+
+            <div class="help" style="margin-top:12px;">
+              <div class="warn">
+                Emergency warning: If you have severe symptoms (chest pain, trouble breathing, heavy bleeding),
+                seek emergency care immediately.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div class="modalOverlay" id="registerModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="registerTitle">
+      <div class="modalTop">
+        <div>
+          <div class="modalTitle" id="registerTitle">Patient Registration</div>
+          <div class="muted small">Create a patient account to submit symptoms.</div>
+        </div>
+        <button class="iconBtn" id="closeRegisterBtn" type="button" aria-label="Close">✕</button>
+      </div>
+
+      <div class="modalGrid">
+        <div class="panel span2">
+          <div class="panelTitle">Create account</div>
+          <div class="panelBody">
+            <form id="registerForm" class="form">
+              <label class="field">
+                <span>Full name</span>
+                <input name="full_name" required minlength="2" maxlength="200" autocomplete="name" />
+              </label>
+              <label class="field">
+                <span>Username</span>
+                <input name="username" required minlength="3" maxlength="120" autocomplete="username" />
+              </label>
+              <label class="field">
+                <span>Password</span>
+                <input name="password" type="password" required minlength="8" maxlength="128" autocomplete="new-password" />
+              </label>
+
+              <div class="row row-space">
+                <div class="muted small">
+                  After registration, you will be logged in automatically.
+                </div>
+                <div class="row">
+                  <button class="btn btn-secondary" type="submit">Create account</button>
+                  <button class="btn btn-ghost" id="cancelRegisterBtn" type="button">Cancel</button>
+                </div>
+              </div>
+            </form>
+
+            <div class="note" id="registerOut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
